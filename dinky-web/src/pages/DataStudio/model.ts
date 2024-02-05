@@ -133,6 +133,8 @@ export type TaskDataBaseType = {
   statement: string;
   dialect: string;
   step: number;
+  batchModel : boolean;
+  jobId : string;
   // Only common sql has(只有普通sql才有)
   databaseId?: number;
   envId?: number;

@@ -76,6 +76,8 @@ const ConsoleContent = (props: ConsoleProps) => {
   }));
 
   const onUpdate = (data: ProcessStep) => {
+
+
     setProcessNode((prevState: any) => {
       //如果key不一致代表重新提交了任务，清空旧状态
       if (prevState && prevState.key != data.key) {
@@ -84,7 +86,10 @@ const ConsoleContent = (props: ConsoleProps) => {
       return data;
     });
     setSelectNode((prevState: any) => {
-      if (prevState && prevState.key == data.lastUpdateStep.key) {
+
+
+      if (prevState  == data.lastUpdateStep.key) {
+
         //更新当前节点
         return data.lastUpdateStep;
       } else if (!prevState || prevState.key == data.key) {

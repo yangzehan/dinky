@@ -72,6 +72,8 @@ import {
 import { connect } from '@umijs/max';
 import { Breadcrumb, Descriptions, Modal, Space } from 'antd';
 import React, { memo, useEffect, useState } from 'react';
+import {useModel} from "@@/exports";
+import {SseData} from "@/models/Sse";
 
 const headerStyle: React.CSSProperties = {
   display: 'inline-flex',
@@ -95,6 +97,9 @@ const HeaderContainer = (props: connect) => {
     queryTaskData,
     enabledDs
   } = props;
+  // const { subscribeTopic } = useModel('Sse', (model: any) => ({
+  //   subscribeTopic: model.subscribeTopic
+  // }));
 
   const [modal, contextHolder] = Modal.useModal();
 
@@ -140,6 +145,7 @@ const HeaderContainer = (props: connect) => {
       currentDinkyTaskValue: currentData as TaskDataType
     }));
   };
+
 
   const handlePushDolphinCancel = async () => {
     setPushDolphinState((prevState) => ({
@@ -204,6 +210,8 @@ const HeaderContainer = (props: connect) => {
     if (selectSql == null || selectSql == '') {
       selectSql = currentData.statement;
     }
+    const saved = currentData.step == JOB_LIFE_CYCLE.PUBLISH ? true : await handleSave();
+    if (!saved) return;
 
     const res = await debugTask(
       l('pages.datastudio.editor.debugging', '', { jobName: currentData.name }),
@@ -227,16 +235,22 @@ const HeaderContainer = (props: connect) => {
     if (isSql(currentData.dialect)) {
       currentData.status = JOB_STATUS.FINISHED;
       if (currentTab) currentTab.console.results = res.data.results;
-    } else {
-      if (currentTab) currentTab.console.result = res.data.result;
-    }
-    // Common sql task is synchronized, so it needs to automatically update the status to finished.
-    if (isSql(currentData.dialect)) {
-      currentData.status = JOB_STATUS.FINISHED;
+    }else if (res.data.jobConfig.batchModel){
+      // test(res.data.jobId)
     }
     if (currentTab) currentTab.console.result = res.data.result;
     saveTabs({ ...props.tabs });
   };
+  // const test=(jobId : string)=>{
+  //   subscribeTopic([jobId],(data:SseData)=>{
+  //     if (!currentData){
+  //         return
+  //     }
+  //     currentData.status = JOB_STATUS.FINISHED;
+  //     saveTabs({ ...props.tabs });
+  //     console.log("作业结束！！！！！！！！！！！！！！")
+  //   })
+  // }
 
   const handlerSubmit = async () => {
     updateSelectBottomKey(LeftBottomKey.CONSOLE_KEY);

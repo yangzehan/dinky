@@ -19,8 +19,11 @@
 
 package org.dinky.job;
 
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.dinky.assertion.Asserts;
 import org.dinky.context.SpringContextUtils;
+import org.dinky.context.SseSessionContextHolder;
 import org.dinky.daemon.constant.FlinkTaskConstant;
 import org.dinky.daemon.task.DaemonTask;
 import org.dinky.daemon.task.DaemonTaskConfig;
@@ -30,15 +33,11 @@ import org.dinky.job.handler.JobMetricsHandler;
 import org.dinky.job.handler.JobRefreshHandler;
 import org.dinky.service.JobInstanceService;
 import org.dinky.service.MonitorService;
+import org.springframework.context.annotation.DependsOn;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.springframework.context.annotation.DependsOn;
-
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 @DependsOn("springContextUtils")
 @Slf4j
@@ -46,6 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FlinkJobTask implements DaemonTask {
 
     private DaemonTaskConfig config;
+    private Boolean batchModel;
 
     public static final String TYPE = FlinkJobTask.class.toString();
 
@@ -88,19 +88,37 @@ public class FlinkJobTask implements DaemonTask {
     /**
      * Processing tasks.
      * <p>
-     * Handle job refresh, alarm, monitoring and other actions
-     * Returns true if the job has completed or exceeded the time to obtain data,
-     * indicating that the processing is complete and moved out of the thread pool
-     * Otherwise, false is returned, indicating that the processing is not completed and continues to remain in the thread pool
+     * Handle job refresh, alarm,
+     * monitoring and other actions
+     * Returns true if the job has
+     * completed or exceeded the time to
+     * obtain data,
+     * indicating that the processing is
+     * complete and moved out of the
+     * thread pool
+     * Otherwise, false is returned,
+     * indicating that the processing is
+     * not completed and continues to
+     * remain in the thread pool
      * </p>
      *
-     * @return Returns true if the job has completed, otherwise returns false
+     * @return Returns true if the job
+     * has completed, otherwise returns
+     * false
      */
     @Override
     public boolean dealTask() {
         volatilityBalance();
 
         boolean isDone = JobRefreshHandler.refreshJob(jobInfoDetail, isNeedSave());
+//      发送结束标志
+        if (isDone && batchModel) {
+            try {
+                SseSessionContextHolder.sendTopic(jobInfoDetail.getJobDataDto().getJob().getJid(), true);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
         if (Asserts.isAllNotNull(jobInfoDetail.getClusterInstance())) {
             JobAlertHandler.getInstance().check(jobInfoDetail);
             JobMetricsHandler.refeshAndWriteFlinkMetrics(jobInfoDetail, verticesAndMetricsMap);
@@ -111,10 +129,18 @@ public class FlinkJobTask implements DaemonTask {
     /**
      * Volatility balance.
      * <p>
-     * This method is used to perform volatility equilibrium operations. Between each call,
-     * by calculating the time interval between the current time and the last processing time,
-     * If the interval is less than the set sleep time (TIME_SLEEP),
-     * The thread sleeps for a period of time. Then update the last processing time to the current time.
+     * This method is used to perform
+     * volatility equilibrium
+     * operations. Between each call,
+     * by calculating the time interval
+     * between the current time and the
+     * last processing time,
+     * If the interval is less than the
+     * set sleep time (TIME_SLEEP),
+     * The thread sleeps for a period of
+     * time. Then update the last
+     * processing time to the current
+     * time.
      * </p>
      */
     public void volatilityBalance() {
@@ -122,7 +148,8 @@ public class FlinkJobTask implements DaemonTask {
         if (gap < FlinkTaskConstant.TIME_SLEEP) {
             try {
                 Thread.sleep(FlinkTaskConstant.TIME_SLEEP);
-            } catch (InterruptedException e) {
+            } catch (
+                    InterruptedException e) {
                 log.error(e.getMessage(), e);
             }
         }
@@ -132,14 +159,23 @@ public class FlinkJobTask implements DaemonTask {
     /**
      * Determine if you need to save.
      * <p>
-     * This method is used to determine whether saving is required.
-     * According to the value of the refresh count,
-     * if the refreshCount is divisible by 60, it returns true, indicating that it needs to be saved.
-     * At the same time, if you need to save, reset refreshCount to 0 to restart the count.
-     * Finally, increment refreshCount by 1.
+     * This method is used to determine
+     * whether saving is required.
+     * According to the value of the
+     * refresh count,
+     * if the refreshCount is divisible
+     * by 60, it returns true,
+     * indicating that it needs to be
+     * saved.
+     * At the same time, if you need to
+     * save, reset refreshCount to 0 to
+     * restart the count.
+     * Finally, increment refreshCount
+     * by 1.
      * </p>
      *
-     * @return Returns true if you need to save, otherwise returns false
+     * @return Returns true if you need
+     * to save, otherwise returns false
      */
     public boolean isNeedSave() {
         boolean isNeed = refreshCount % 60 == 0;
@@ -151,18 +187,36 @@ public class FlinkJobTask implements DaemonTask {
     }
 
     /**
-     * Determine whether objects are equal.
+     * Determine whether objects are
+     * equal.
      * <p>
-     * This method is used to determine whether the current object is equal to the given object.
-     * If two object references are the same, return true directly.
-     * Returns false if the given object is null or the class of the given object is not the same as the class of the current object.
-     * Otherwise, convert the given object to the FlinkJobTask type and compare the config IDs of the two objects equal.
-     * In FlinkJobTask, the ID of the config is unique, so only need to compare whether the ID of the config is equal or not.
-     * If the objects are judged to be equal, the same task will join the thread pool multiple times.
+     * This method is used to determine
+     * whether the current object is
+     * equal to the given object.
+     * If two object references are the
+     * same, return true directly.
+     * Returns false if the given object
+     * is null or the class of the given
+     * object is not the same as the
+     * class of the current object.
+     * Otherwise, convert the given
+     * object to the FlinkJobTask type
+     * and compare the config IDs of the
+     * two objects equal.
+     * In FlinkJobTask, the ID of the
+     * config is unique, so only need to
+     * compare whether the ID of the
+     * config is equal or not.
+     * If the objects are judged to be
+     * equal, the same task will join
+     * the thread pool multiple times.
      * </p>
      *
-     * @param obj object to compare
-     * @return Returns true if two objects are equal, otherwise returns false
+     * @param obj
+     *         object to compare
+     * @return Returns true if two
+     * objects are equal, otherwise
+     * returns false
      */
     @Override
     public boolean equals(Object obj) {

@@ -36,16 +36,10 @@ import org.dinky.data.model.mapping.ClusterInstanceMapping;
 import org.dinky.gateway.enums.GatewayType;
 import org.dinky.job.FlinkJobTask;
 import org.dinky.job.Job;
-import org.dinky.service.ClusterConfigurationService;
-import org.dinky.service.ClusterInstanceService;
-import org.dinky.service.HistoryService;
-import org.dinky.service.JobHistoryService;
-import org.dinky.service.JobInstanceService;
-import org.dinky.service.TaskService;
+import org.dinky.service.*;
+import org.springframework.context.annotation.DependsOn;
 
 import java.time.LocalDateTime;
-
-import org.springframework.context.annotation.DependsOn;
 
 /**
  * Job2MysqlHandler
@@ -170,7 +164,7 @@ public class Job2MysqlHandler extends AbsJobHandler {
 
         if (Asserts.isNullCollection(job.getJids())
                 || (GatewayType.LOCAL.equalsValue(job.getJobConfig().getType())
-                        && Asserts.isNullString(job.getJobManagerAddress()))) {
+                && Asserts.isNullString(job.getJobManagerAddress()))) {
             return true;
         }
 
@@ -198,12 +192,14 @@ public class Job2MysqlHandler extends AbsJobHandler {
                 .clusterConfigurationJson(
                         Asserts.isNotNull(clusterConfigurationId)
                                 ? ClusterConfigurationMapping.getClusterConfigurationMapping(
-                                        clusterConfigurationService.getClusterConfigById(clusterConfigurationId))
+                                clusterConfigurationService.getClusterConfigById(clusterConfigurationId))
                                 : null)
                 .build();
         jobHistoryService.save(jobHistory);
         DaemonTaskConfig taskConfig = DaemonTaskConfig.build(FlinkJobTask.TYPE, jobInstance.getId());
-        FlinkJobThreadPool.getInstance().execute(DaemonTask.build(taskConfig));
+        FlinkJobTask daemonTask = (FlinkJobTask) DaemonTask.build(taskConfig);
+        daemonTask.setBatchModel(job.getJobConfig().isBatchModel());
+        FlinkJobThreadPool.getInstance().execute(daemonTask);
         return true;
     }
 
