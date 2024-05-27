@@ -19,7 +19,7 @@ spring:
     # If you use pgsql database, please configure pgsql database connection information in application-pgsql.yml
     # If you use the h2 database, please configure the h2 database connection information in application-h2.yml,
     # note: the h2 database is only for experience use, and the related data that has been created cannot be migrated, please use it with caution
-    active: ${DB_ACTIVE:h2} #[h2,mysql,pgsql]
+    active: ${DB_ACTIVE:mysql} #[h2,mysql,pgsql]
     include: jmx
   lifecycle:
     timeout-per-shutdown-phase: 30s
@@ -173,9 +173,17 @@ pac4j:
   # Check supported sso config parameters for different authentication clients from the below link
   # https://github.com/pac4j/pac4j/blob/master/documentation/docs/config-module.md
   properties:
-    principalNameAttribute: login #Authenticate user principal
-    github.id:
-    github.secret:
+    principalNameAttribute: nickname #Authenticate user principal
+#    github.id: 8fe6063e1f5bf2dba386
+#    github.secret: d8c3800a07f443d0cf17838703ddc9ee7a478feb
+
+    oauth2:
+      id: swirl-sso-demo-by-code
+      authUrl: http://127.0.0.1:80/sso
+      tokenUrl: http://127.0.0.1:48080/admin-api/system/oauth2/token
+      secret: test
+      clientAuthenticationMethod: requestBody
+      profileUrl: http://127.0.0.1:48080/admin-api/system/oauth2/user/get
     # Optional, change by authentication client
     # Please replace and fill in your client config below when enabled SSO
 

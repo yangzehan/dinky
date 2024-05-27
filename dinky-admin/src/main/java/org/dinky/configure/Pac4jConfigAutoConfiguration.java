@@ -21,6 +21,7 @@ package org.dinky.configure;
 
 import org.dinky.configure.propertie.Pac4jConfigurationProperties;
 
+import org.dinky.sso.client.RuoyiClient;
 import org.pac4j.config.client.PropertiesConfigFactory;
 import org.pac4j.core.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,9 @@ public class Pac4jConfigAutoConfiguration {
     public Config config() {
         final PropertiesConfigFactory factory =
                 new PropertiesConfigFactory(pac4j.getCallbackUrl(), pac4j.getProperties());
-        return factory.build();
+        Config config = factory.build();
+        config.getClients().getClients().add(new RuoyiClient("swirl-sso-demo-by-code", "test"));
+
+        return config;
     }
 }

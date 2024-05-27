@@ -110,9 +110,9 @@ public class AppConfig implements WebMvcConfigurer {
                         "/download/**",
                         "/druid/**");
         if (ssoEnabled) {
-            log.info("Load{}", config.getClients().getClients().get(0).getName());
+            log.info("Load{}", config.getClients().getClients().get(1).getName());
             registry.addInterceptor(buildInterceptor(
-                            config.getClients().getClients().get(0).getName()))
+                            config.getClients().getClients().get(1).getName()))
                     .addPathPatterns("/api/sso/login")
                     .addPathPatterns("/api/sso/token");
         }

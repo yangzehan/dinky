@@ -27,6 +27,8 @@ import org.dinky.data.model.rbac.Tenant;
 import org.dinky.data.result.Result;
 import org.dinky.service.UserService;
 
+import org.pac4j.core.profile.ProfileManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,6 +57,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class AdminController {
+
+    private ProfileManager profileManager;
 
     private final UserService userService;
 

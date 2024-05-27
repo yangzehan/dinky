@@ -63,6 +63,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import org.pac4j.core.profile.ProfileManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,6 +88,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implements UserService {
+    private final ProfileManager profileManager;
 
     private static final String DEFAULT_PASSWORD = "123456";
 
@@ -479,9 +481,12 @@ public class UserServiceImpl extends SuperServiceImpl<UserMapper, User> implemen
 
     @Override
     public void outLogin() {
-        SaSession session = StpUtil.getSession();
-        session.logout();
+        if (profileManager != null){
+            profileManager.logout();
+        }
+
         StpUtil.logout(StpUtil.getLoginIdAsInt());
+
     }
 
     @Override

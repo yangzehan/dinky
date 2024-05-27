@@ -29,6 +29,8 @@ import org.dinky.service.UserService;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.pac4j.core.config.Config;
 import org.pac4j.core.context.JEEContext;
@@ -117,8 +119,7 @@ public class SsoCpntroller {
     }
 
     @GetMapping("/logout")
-    public void ssoLogout() {
-
+    public void ssoLogout()  {
         logoutController.logout(webContext.getNativeRequest(), webContext.getNativeResponse());
     }
 
