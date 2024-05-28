@@ -104,6 +104,7 @@ public class AppConfig implements WebMvcConfigurer {
                 }))
                 .addPathPatterns("/api/**", "/openapi/**")
                 .excludePathPatterns(
+                        "/api/sso/**",
                         "/api/sso/ssoEnableStatus",
                         "/api/login",
                         "/api/ldap/ldapEnableStatus",
@@ -118,7 +119,7 @@ public class AppConfig implements WebMvcConfigurer {
         }
         registry.addInterceptor(new TenantInterceptor())
                 .addPathPatterns("/api/**")
-                .excludePathPatterns("/api/sso/ssoEnableStatus", "/api/login", "/api/ldap/ldapEnableStatus")
+                .excludePathPatterns("/api/sso/**", "/api/login", "/api/ldap/ldapEnableStatus")
                 .addPathPatterns("/api/alertGroup/**")
                 .addPathPatterns("/api/alertHistory/**")
                 .addPathPatterns("/api/alertInstance/**")
