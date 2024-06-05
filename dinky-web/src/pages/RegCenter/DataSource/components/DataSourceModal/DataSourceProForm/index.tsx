@@ -113,7 +113,7 @@ const DataSourceProForm: React.FC<DataSourceProFormProps> = (props) => {
               autoClearSearchValue
               options={AUTO_COMPLETE_TYPE}
               style={{
-                width: parent.innerWidth / 2 - 80
+                width: window.innerWidth / 2 - 80
               }}
               filterOption
               onSelect={(value) => form && form.setFieldsValue({ url: value })}
@@ -121,7 +121,7 @@ const DataSourceProForm: React.FC<DataSourceProFormProps> = (props) => {
               <TextArea placeholder={l('rc.ds.urlPlaceholder')} />
               {/*<ProFormTextArea*/}
               {/*  name='url'*/}
-              {/*  width={parent.innerWidth / 2 - 80}*/}
+              {/*  width={350 / 2 - 80}*/}
               {/*  label={l('rc.ds.url')}*/}
               {/*  rules={[{ required: true, message: l('rc.ds.urlPlaceholder') }]}*/}
               {/*  placeholder={l('rc.ds.urlPlaceholder')}*/}

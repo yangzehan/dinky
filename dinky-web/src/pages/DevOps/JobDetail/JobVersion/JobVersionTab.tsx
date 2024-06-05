@@ -100,7 +100,7 @@ const JobVersionTab = (props: JobProps) => {
               hoverable
               bordered
               size={'small'}
-              bodyStyle={{ height: parent.innerHeight }}
+              bodyStyle={{ height: 860 }}
               title={'V-' + currentVersion?.versionId}
               extra={
                 <>
@@ -116,7 +116,7 @@ const JobVersionTab = (props: JobProps) => {
               <CodeShow
                 showFloatButton
                 code={currentVersion?.statement ?? ''}
-                height={parent.innerHeight - 250}
+                height={860 - 250}
                 language={matchLanguage(currentVersion?.dialect)}
               />
             </ProCard>

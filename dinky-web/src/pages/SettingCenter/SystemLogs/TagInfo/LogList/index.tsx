@@ -64,10 +64,10 @@ const LogList = () => {
 
   return (
     <>
-      <ProCard bodyStyle={{ height: parent.innerHeight - 160 }} ghost bordered>
+      <ProCard bodyStyle={{ height: 860 - 160 }} ghost bordered>
         <ProCard
           ghost
-          bodyStyle={{ height: parent.innerHeight }}
+          bodyStyle={{ height: 860 }}
           hoverable
           bordered
           colSpan={'18%'}
@@ -78,7 +78,7 @@ const LogList = () => {
         <ProCard.Divider type={'vertical'} />
         <ProCard
           ghost
-          bodyStyle={{ height: parent.innerHeight }}
+          bodyStyle={{ height: 860 }}
           hoverable
           bordered
           colSpan={'auto'}

@@ -58,7 +58,7 @@ const JobManagerLogsTab = (props: JobProps) => {
           showFloatButton
           language={language}
           code={ur.data ? ur.data : 'No Log'}
-          height={parent.innerHeight - 300}
+          height={860 - 300}
         />
       </Spin>
     );
@@ -96,7 +96,7 @@ const JobManagerLogsTab = (props: JobProps) => {
     <ProCard
       headerBordered
       bordered
-      bodyStyle={{ height: parent.innerHeight, overflow: 'auto' }}
+      bodyStyle={{ height: 860, overflow: 'auto' }}
       tabs={{
         size: 'small',
         tabPosition: 'top',

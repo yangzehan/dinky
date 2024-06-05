@@ -230,7 +230,7 @@ const JobList = (props: connect) => {
       boxShadow
       size={'small'}
       bodyStyle={{
-        height: parent.innerHeight - 235,
+        height: 860 - 235,
         overflow: 'auto',
         width: '99vw'
       }}
@@ -311,7 +311,7 @@ const JobList = (props: connect) => {
           <ProTable<Jobs.JobInstance>
             {...PROTABLE_OPTIONS_PUBLIC}
             search={false}
-            tableStyle={{ height: parent.innerHeight - 245 }}
+            tableStyle={{ height: 860 - 245 }}
             loading={{ delay: 1000 }}
             rowKey={(record) => record.id}
             columns={jobListColumns}
@@ -369,7 +369,7 @@ const JobList = (props: connect) => {
                 />
               )
             }}
-            scroll={{ y: parent.innerHeight - 245 - 150 }}
+            scroll={{ y: 860 - 245 - 150 }}
           />
         </Pane>
       </SplitPane>

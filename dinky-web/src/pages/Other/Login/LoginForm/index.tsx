@@ -106,11 +106,13 @@ const LoginForm: React.FC<LoginFormProps> = (props) => {
             {l('login.ldapLogin')}
           </ProFormCheckbox>
         </Col>
-          <Col span={6}>
-            <a href={API_CONSTANTS.SSO_LOGIN}  hidden={!ssoEnabled}>
-              {l('login.ssoLogin')}
-            </a>
-          </Col>
+
+<Col span={6}>
+  {!ssoEnabled ? null : <a href="#" onClick={() => window.parent.location.href = API_CONSTANTS.SSO_LOGIN}>
+    {l('login.ssoLogin')}
+  </a>}
+</Col>
+
         </Row>
       </>
     );

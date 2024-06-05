@@ -27,7 +27,7 @@ import { l } from '@/utils/intl';
 import { PageLoading, Settings as LayoutSettings } from '@ant-design/pro-components';
 import type { RunTimeLayoutConfig } from '@umijs/max';
 import { history } from '@umijs/max';
-import { JSX } from 'react';
+import {JSX, ReactDOM} from 'react';
 import { Reducer, StoreEnhancer } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
@@ -37,6 +37,10 @@ import { FullScreenProvider } from './hooks/useEditor';
 import { errorConfig } from './requestErrorConfig';
 import { getDataByParamsReturnResult } from './services/BusinessCrud';
 import { API } from './services/data';
+import './public-path.js'
+window.unmount = () => {
+  ReactDOM.unmountComponentAtNode(document.getElementById('root'))
+}
 
 // const isDev = process.env.NODE_ENV === "development";
 const loginPath = API_CONSTANTS.LOGIN_PATH;
@@ -173,7 +177,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     },*/
     isChildrenLayout: true,
     ...defaultSettings,
-    ...initialState?.settings
+    ...initialState?.settings,
+    layout: 'mix'
   };
 };
 

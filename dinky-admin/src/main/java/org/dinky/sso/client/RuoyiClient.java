@@ -22,6 +22,7 @@ package org.dinky.sso.client;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.github.scribejava.core.httpclient.HttpClient;
 import com.github.scribejava.core.httpclient.HttpClientConfig;
@@ -31,6 +32,7 @@ import lombok.Setter;
 import org.dinky.sso.profile.ruoyi.RuoYiProfileCreator;
 import org.dinky.sso.profile.ruoyi.RuoYiProfileDefinition;
 import org.dinky.sso.scribe.builder.api.RuoYiApi20;
+import org.pac4j.core.exception.http.RedirectionActionHelper;
 import org.pac4j.oauth.client.OAuth20Client;
 import org.pac4j.oauth.profile.wechat.WechatProfileCreator;
 import org.pac4j.oauth.profile.wechat.WechatProfileDefinition;
@@ -69,6 +71,8 @@ public class RuoyiClient extends OAuth20Client {
     protected void clientInit() {
         String authUrl = "http://127.0.0.1:80/sso";
         String tokenUrl = "http://127.0.0.1:48080/admin-api/system/oauth2/token";
+//        defaultLogoutActionBuilder((ctx, profile, targetUrl) ->
+//                Optional.of(RedirectionActionHelper.buildRedirectUrlAction(ctx, "http://127.0.0.1:48080/admin-api/system/auth/logout")));
         RuoYiApi20 ruoYiApi20 = new RuoYiApi20(authUrl, tokenUrl);
         ruoYiApi20.setClientAuthenticationMethod("requestBody");
         configuration.setApi(ruoYiApi20);

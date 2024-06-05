@@ -53,11 +53,13 @@ const Login: React.FC = () => {
     };
   });
   useEffect(() => {
+
     if (location.hash==("#/user/login?from=sso")){
       ssoToken().then(
         res => {
           if (res) {
             setLocalStorageOfToken(JSON.stringify(res));
+
           } else {
             // 如果没有获取到token信息，直接跳转到登录页
             redirectToLogin();
@@ -152,6 +154,8 @@ const Login: React.FC = () => {
   const singleTenant = async (tenantList: UserBaseInfo.Tenant[]) => {
     const tenantId = tenantList[0].id;
     setTenantStorageAndCookie(tenantId);
+
+
     const chooseTenantResult: API.Result = await chooseTenantSubmit({
       tenantId
     });
